@@ -95,15 +95,13 @@ const htmlContent = `
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ZenTrip Planner</title>
+    <title>ZenTrip - Peaceful Trip Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        /* GLOBAL SCROLLBAR HIDING */
         * { -ms-overflow-style: none; scrollbar-width: none; }
         ::-webkit-scrollbar { display: none; }
 
-        /* Adjusted backgrounds */
         .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; padding: 0 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); }
         .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 16px; background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(20px); }
         
@@ -114,11 +112,7 @@ const htmlContent = `
         .checkbox-ios:checked { background-color: #30D158; border-color: #30D158; background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e"); }
 
         .nav-pill { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; padding: 6px; border-radius: 99px; 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(5px); 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; padding: 6px; border-radius: 99px;
         }
 
         .nav-pill-item { 
@@ -130,18 +124,20 @@ const htmlContent = `
 
         .nav-pill-item.active { 
             color: #fff;
-            background-color: rgba(10, 132, 255, 0.25);
-            border-color: rgba(10, 132, 255, 0.4); 
-            box-shadow: inset 0 0 20px rgba(10, 132, 255, 0.2); 
-            backdrop-filter: blur(5px);
+            background-color: rgba(10, 132, 255, 0.40);
         }
         
         .modal-container { z-index: 70 !important; }
         
-        /* Consistent Pill Buttons */
-        .pill-btn { padding: 4px 10px; border-radius: 99px; font-weight: 600; font-size: 13px; transition: background-color 0.1s; display: inline-flex; align-items: center; justify-content: center; }
-        .pill-glass-base { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.12); }
+        .liquid-glass { 
+            backdrop-filter: blur(10px); 
+            -webkit-backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
         
+        .pill-btn { padding: 4px 10px; border-radius: 99px; font-weight: 600; font-size: 13px; transition: background-color 0.1s; display: inline-flex; align-items: center; justify-content: center; }
         .pill-btn.edit.glass { color: #D1D1D6; background-color: rgba(142, 142, 147, 0.2); }
         .pill-btn.add.glass { color: #0A84FF; background-color: rgba(10, 132, 255, 0.2); }
         .pill-btn.delete.glass { color: #FF453A; background-color: rgba(255, 69, 58, 0.2); }
@@ -164,17 +160,17 @@ const htmlContent = `
 
     <nav class="nav-bar">
         <div class="flex items-center mb-1.5">
-            <h1 class="text-2xl font-extrabold tracking-wider text-white">ZenTrip</h1>
+            <h1 class="text-2xl font-extrabold tracking-wider text-white">🧘 ZenTrip</h1>
             <div x-show="isFetching" class="fetch-spinner border-2 border-white/30 border-l-blue-500 rounded-full w-4 h-4 animate-spin ml-2"></div>
         </div>
-        <button @click="openAddModal()" class="pill-btn add glass pill-glass-base !text-sm !px-4 !py-1.5 mb-1.5">Add</button>
+        <button @click="openAddModal()" class="pill-btn add glass liquid-glass !text-sm !px-4 !py-1.5 mb-1.5">Add</button>
     </nav>
     
-    <div class="nav-pill">
-        <div @click="page = 'itinerary'" class="nav-pill-item" :class="{'active': page === 'itinerary'}">
+    <div class="nav-pill liquid-glass">
+        <div @click="page = 'itinerary'" class="nav-pill-item" :class="{'liquid-glass active': page === 'itinerary'}">
             <span class="text-xl">🌏</span> Itinerary
         </div>
-        <div @click="page = 'checklists'" class="nav-pill-item" :class="{'active': page === 'checklists'}">
+        <div @click="page = 'checklists'" class="nav-pill-item" :class="{'liquid-glass active': page === 'checklists'}">
             <span class="text-xl">📝</span> Checklists
         </div>
     </div>
@@ -197,7 +193,7 @@ const htmlContent = `
              x-transition:leave="transition ease-in duration-300" 
              x-transition:leave-start="translate-y-0 opacity-100" 
              x-transition:leave-end="translate-y-full opacity-0"
-             class="w-full max-w-2xl bg-zinc-900 border-t border-white/10 rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[95vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+             class="w-full max-w-2xl liquid-glass rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[95vh] min-h-[40vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
             
             <div class="flex justify-between items-center mb-6">
                 <button @click="modalOpen = false" class="text-blue-500 text-base">Cancel</button>
@@ -290,7 +286,7 @@ const htmlContent = `
                     <div>
                         <div class="sticky-header flex justify-between items-center">
                             <h2 class="text-xl font-bold text-blue-500 tracking-wide" x-text="formatDate(dateKey)"></h2>
-                            <span x-show="dateKey === currentDateString" class="text-xs font-bold bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md uppercase">Today</span>
+                            <span x-show="dateKey === currentDateString" class="text-xs font-bold bg-orange-500/20 text-orange-400 px-2 py-1 rounded-md uppercase">Today</span>
                         </div>
 
                         <div class="pl-2 pr-3 relative">
@@ -323,8 +319,8 @@ const htmlContent = `
                                             <div class="flex justify-between items-start">
                                                 <span class="text-3xl font-bold text-white tracking-wide" x-text="item.time"></span>
                                                 <div class="flex items-center gap-2">
-                                                    <button @click="openEditItineraryModal(item)" class="pill-btn edit glass pill-glass-base">Edit</button>
-                                                    <button @click="deleteItineraryItem(item.id)" class="pill-btn delete glass pill-glass-base">Delete</button>
+                                                    <button @click="openEditItineraryModal(item)" class="pill-btn edit glass liquid-glass">Edit</button>
+                                                    <button @click="deleteItineraryItem(item.id)" class="pill-btn delete glass liquid-glass">Delete</button>
                                                 </div>
                                             </div>
                                             
@@ -342,12 +338,12 @@ const htmlContent = `
                                             
                                             <div class="flex items-center justify-between mt-auto pt-1">
                                                 <div class="flex flex-wrap gap-2">
-                                                    <a x-show="item.locationUrl" :href="item.locationUrl" target="_blank" class="flex items-center gap-1.5 pill-btn add glass !px-3 !py-1 pill-glass-base">
+                                                    <a x-show="item.locationUrl" :href="item.locationUrl" target="_blank" class="flex items-center gap-1.5 pill-btn add glass !px-3 !py-1 liquid-glass">
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                                         <span>Directions</span>
                                                     </a>
                                                     <template x-for="doc in item.docs" :key="doc.url">
-                                                        <a :href="doc.url" target="_blank" class="flex items-center gap-1.5 pill-btn edit glass pill-glass-base !text-xs !py-1 !px-3">
+                                                        <a :href="doc.url" target="_blank" class="flex items-center gap-1.5 pill-btn edit glass liquid-glass !text-xs !py-1 !px-3">
                                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                                                             <span x-text="doc.name"></span>
                                                         </a>
@@ -395,8 +391,8 @@ const htmlContent = `
                                     <h3 class="text-xl font-bold text-white" x-text="list.title"></h3>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <button @click="openAddChecklistItemModal(list.id, list.title)" type="button" class="pill-btn add glass pill-glass-base">Add</button>
-                                    <button @click="deleteChecklist(list.id)" type="button" class="pill-btn delete glass pill-glass-base">Delete</button>
+                                    <button @click="openAddChecklistItemModal(list.id, list.title)" type="button" class="pill-btn add glass liquid-glass">Add</button>
+                                    <button @click="deleteChecklist(list.id)" type="button" class="pill-btn delete glass liquid-glass">Delete</button>
                                 </div>
                             </div>
                             <div class="space-y-2 pt-2">
@@ -409,7 +405,7 @@ const htmlContent = `
                                             </div>
                                             <span x-text="item.text" class="text-white flex-1 min-w-0 pr-4 break-words"></span>
                                         </div>
-                                        <button @click="deleteChecklistItem(list.id, item.id)" type="button" class="pill-btn delete glass pill-glass-base !text-xs !py-1 !px-3 shrink-0">Delete</button>
+                                        <button @click="deleteChecklistItem(list.id, item.id)" type="button" class="pill-btn delete glass liquid-glass !text-xs !py-1 !px-3 shrink-0">Delete</button>
                                     </div>
                                 </template>
                             </div>
