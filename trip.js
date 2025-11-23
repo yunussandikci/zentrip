@@ -101,16 +101,17 @@ const htmlContent = `
     <style>
         * { -ms-overflow-style: none; scrollbar-width: none; }
         ::-webkit-scrollbar { display: none; }
+        .overflow-hidden { overflow: hidden; }
 
-        .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; padding: 0 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); }
-        .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 16px; background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(20px); }
+        .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; padding: 0 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); }
+        .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 16px; background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px); }
         
         .glass-input { width: 100%; height: 50px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; color: white; font-size: 17px; padding: 0 16px; outline: none; box-sizing: border-box; min-width: 0; }
         .glass-input:focus { border-color: #0A84FF; background: rgba(255, 255, 255, 0.15); }
         .glass-input.textarea { height: auto; padding-top: 12px; padding-bottom: 12px; min-height: 100px; resize: none; }
         .checkbox-ios { appearance: none; width: 24px; height: 24px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; background: transparent; cursor: pointer; }
         .checkbox-ios:checked { background-color: #30D158; border-color: #30D158; background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e"); }
-
+ 
         .nav-pill { 
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; padding: 6px; border-radius: 99px;
         }
@@ -130,11 +131,11 @@ const htmlContent = `
         .modal-container { z-index: 70 !important; }
         
         .liquid-glass { 
-            backdrop-filter: blur(10px); 
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
             background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.125);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 1px rgba(255, 255, 255, 0.05);
         }
         
         .pill-btn { padding: 4px 10px; border-radius: 99px; font-weight: 600; font-size: 13px; transition: background-color 0.1s; display: inline-flex; align-items: center; justify-content: center; }
@@ -145,8 +146,6 @@ const htmlContent = `
         .gradient-dim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.3) 100%); }
         .gradient-separator { height: 1px; width: 100%; background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%); margin: 12px 0; }
         
-        /* Helper for scroll locking */
-        .overflow-hidden { overflow: hidden; }
 
         @keyframes pulse-orange {
             0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
@@ -193,7 +192,7 @@ const htmlContent = `
              x-transition:leave="transition ease-in duration-300" 
              x-transition:leave-start="translate-y-0 opacity-100" 
              x-transition:leave-end="translate-y-full opacity-0"
-             class="w-full max-w-2xl liquid-glass rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[95vh] min-h-[40vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+             class="w-full max-w-2xl liquid-glass rounded-t-3xl border-b-0 p-4 sm:p-6 pb-10 max-h-[95vh] min-h-[40vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
             
             <div class="flex justify-between items-center mb-6">
                 <button @click="modalOpen = false" class="text-blue-500 text-base">Cancel</button>
