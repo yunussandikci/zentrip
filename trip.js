@@ -99,8 +99,10 @@ const htmlContent = `
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: #000; color: #fff; }
+        /* GLOBAL SCROLLBAR HIDING */
+        * { -ms-overflow-style: none; scrollbar-width: none; }
         ::-webkit-scrollbar { display: none; }
+
         /* Adjusted backgrounds */
         .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; padding: 0 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(20px); }
         .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 16px; background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(20px); }
@@ -177,9 +179,26 @@ const htmlContent = `
         </div>
     </div>
 
-    <div x-show="modalOpen" class="fixed inset-0 flex items-end justify-center pointer-events-none modal-container">
+    <div x-show="modalOpen" 
+         x-transition:enter="transition duration-300" 
+         x-transition:enter-start="opacity-0" 
+         x-transition:enter-end="opacity-100" 
+         x-transition:leave="transition duration-200" 
+         x-transition:leave-start="opacity-100" 
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 flex items-end justify-center pointer-events-none modal-container">
+        
         <div x-show="modalOpen" @click="modalOpen = false" class="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto"></div>
-        <div x-show="modalOpen" class="w-full max-w-2xl bg-zinc-900 border-t border-white/10 rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[75vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+        
+        <div x-show="modalOpen" 
+             x-transition:enter="transition ease-[cubic-bezier(0.19,1,0.22,1)] duration-500" 
+             x-transition:enter-start="translate-y-full opacity-0" 
+             x-transition:enter-end="translate-y-0 opacity-100" 
+             x-transition:leave="transition ease-in duration-300" 
+             x-transition:leave-start="translate-y-0 opacity-100" 
+             x-transition:leave-end="translate-y-full opacity-0"
+             class="w-full max-w-2xl bg-zinc-900 border-t border-white/10 rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[75vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+            
             <div class="flex justify-between items-center mb-6">
                 <button @click="modalOpen = false" class="text-blue-500 text-base">Cancel</button>
                 <span class="text-white font-bold text-base" x-text="getModalTitle()"></span>
@@ -259,7 +278,13 @@ const htmlContent = `
     </div>
 
     <div class="pt-[70px]">
-        <div x-show="page === 'itinerary'" class="relative">
+        
+        <div x-show="page === 'itinerary'" 
+             x-transition:enter="transition ease-out duration-300 delay-100" 
+             x-transition:enter-start="opacity-0 translate-y-4" 
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="relative">
+            
             <div x-show="itinerary.length > 0">
                 <template x-for="(group, dateKey) in groupedItinerary" :key="dateKey">
                     <div class="pb-12">
@@ -268,9 +293,9 @@ const htmlContent = `
                             <span x-show="dateKey === currentDateString" class="text-xs font-bold bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md uppercase">Today</span>
                         </div>
 
-                        <div class="pl-2 pr-4 relative">
+                        <div class="pl-2 pr-3 relative">
                             <template x-for="(item, index) in group" :key="item.id">
-                                <div class="relative w-full pb-8 pl-7">
+                                <div class="relative w-full pb-8 pl-6">
                                     
                                     <div x-show="index !== group.length - 1" 
                                          class="absolute left-[7px] top-6 bottom-[-24px] w-[2px] bg-white/10 z-0">
@@ -285,7 +310,8 @@ const htmlContent = `
                                     <div class="absolute top-6 left-[1px] w-3.5 h-3.5 rounded-full bg-zinc-800 border-2 border-white/30 z-10"
                                          :class="{'!bg-green-500 !border-green-500': item.done}"></div>
 
-                                    <div class="relative w-full overflow-hidden rounded-xl border border-white/15 shadow-md bg-zinc-900" :class="{'!border-green-500/50': item.done}">
+                                    <div class="relative w-full overflow-hidden rounded-xl border border-white/15 shadow-md bg-zinc-900 transition-all duration-300" 
+                                         :class="{'!border-green-500/50': item.done}">
                                         <div class="absolute inset-0 z-0">
                                             <template x-if="item.bgImage">
                                                 <img :src="item.bgImage" class="w-full h-full object-cover" :class="{'grayscale blur-sm': item.done}">
@@ -354,7 +380,11 @@ const htmlContent = `
             </div>
         </div>
 
-        <div x-show="page === 'checklists'" class="relative">
+        <div x-show="page === 'checklists'" 
+             x-transition:enter="transition ease-out duration-300 delay-100" 
+             x-transition:enter-start="opacity-0 translate-y-4" 
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="relative">
             <div x-show="checklists.length > 0">
                 <div class="px-4 space-y-8 pb-12">
                     <template x-for="list in checklists" :key="list.id">
@@ -371,12 +401,13 @@ const htmlContent = `
                             </div>
                             <div class="space-y-2 pt-2">
                                 <template x-for="item in list.items" :key="item.id">
-                                    <div class="flex items-center justify-between bg-black/30 p-3 rounded-lg" :class="{'opacity-50 line-through text-white/50': item.done}">
+                                    <div class="flex items-center justify-between bg-black/30 p-3 rounded-lg transition-all duration-300" 
+                                         :class="{'opacity-50 line-through text-white/50': item.done}">
                                         <div class="flex items-center gap-3 flex-1 min-w-0">
                                             <div @click="toggleDoneChecklistItem(list.id, item.id, item.done)" class="cursor-pointer shrink-0">
                                                 <input type="checkbox" :checked="item.done" class="checkbox-ios w-5 h-5 pointer-events-none">
                                             </div>
-                                            <span x-text="item.text" class="flex-1 min-w-0 pr-4 break-words"></span>
+                                            <span x-text="item.text" class="text-white flex-1 min-w-0 pr-4 break-words"></span>
                                         </div>
                                         <button @click="deleteChecklistItem(list.id, item.id)" type="button" class="pill-btn delete glass pill-glass-base !text-xs !py-1 !px-3 shrink-0">Delete</button>
                                     </div>
