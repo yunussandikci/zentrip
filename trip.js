@@ -197,7 +197,7 @@ const htmlContent = `
              x-transition:leave="transition ease-in duration-300" 
              x-transition:leave-start="translate-y-0 opacity-100" 
              x-transition:leave-end="translate-y-full opacity-0"
-             class="w-full max-w-2xl bg-zinc-900 border-t border-white/10 rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[75vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+             class="w-full max-w-2xl bg-zinc-900 border-t border-white/10 rounded-t-3xl p-4 sm:p-6 pb-10 max-h-[95vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
             
             <div class="flex justify-between items-center mb-6">
                 <button @click="modalOpen = false" class="text-blue-500 text-base">Cancel</button>
@@ -223,11 +223,11 @@ const htmlContent = `
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="min-w-0">
                         <label class="text-xs text-white/40 pl-2 mb-1 block">Date</label>
-                        <input type="date" x-model="form.date" class="glass-input [color-scheme:dark]">
+                        <input type="date" x-model="form.date" class="glass-input w-full max-w-full appearance-none [color-scheme:dark]">
                     </div>
                     <div class="min-w-0">
                         <label class="text-xs text-white/40 pl-2 mb-1 block">Time</label>
-                        <input type="time" x-model="form.time" class="glass-input [color-scheme:dark]">
+                        <input type="time" x-model="form.time" class="glass-input w-full max-w-full appearance-none [color-scheme:dark]">
                     </div>
                 </div>
                 <div>
@@ -287,7 +287,7 @@ const htmlContent = `
             
             <div x-show="itinerary.length > 0">
                 <template x-for="(group, dateKey) in groupedItinerary" :key="dateKey">
-                    <div class="pb-12">
+                    <div>
                         <div class="sticky-header flex justify-between items-center">
                             <h2 class="text-xl font-bold text-blue-500 tracking-wide" x-text="formatDate(dateKey)"></h2>
                             <span x-show="dateKey === currentDateString" class="text-xs font-bold bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md uppercase">Today</span>
@@ -386,7 +386,7 @@ const htmlContent = `
              x-transition:enter-end="opacity-100 translate-y-0"
              class="relative">
             <div x-show="checklists.length > 0">
-                <div class="px-4 space-y-8 pb-12">
+                <div class="px-4 space-y-8">
                     <template x-for="list in checklists" :key="list.id">
                         <div class="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 shadow-xl">
                             <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
