@@ -99,77 +99,123 @@ const htmlContent = `
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
         * { -ms-overflow-style: none; scrollbar-width: none; }
         ::-webkit-scrollbar { display: none; }
+        
+        :root {
+            --bg-depth: #050505;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-depth);
+            color: #fff; 
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, .brand-font { font-family: 'Outfit', sans-serif; }
         .overflow-hidden { overflow: hidden; }
 
-        .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; padding: 0 20px 10px; display: flex; align-items: flex-end; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.12); background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); }
-        .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); margin-bottom: 16px; background: rgba(0, 0, 0, 0.1); backdrop-filter: blur(10px); }
+        /* --- Aurora Background (Synced with Homepage) --- */
+        .aurora-container {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden;
+        }
+        .aurora-blob {
+            position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.5;
+            transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: radial-gradient(circle, #059669 0%, transparent 70%); animation: breath 12s infinite alternate; }
+        .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: radial-gradient(circle, #7c3aed 0%, transparent 70%); animation: breath 15s infinite alternate-reverse; }
+        .blob-3 { top: 40%; left: 30%; width: 35vw; height: 35vw; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%); opacity: 0.3; animation: rotateBlob 25s infinite linear; }
+
+        @keyframes breath { 0% { opacity: 0.3; scale: 1; } 100% { opacity: 0.5; scale: 1.1; } }
+        @keyframes rotateBlob { from { transform: rotate(0deg) translate(30px) rotate(0deg); } to { transform: rotate(360deg) translate(30px) rotate(-360deg); } }
+
+
+        /* --- UI Components --- */
+        .nav-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 50; height: 70px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(20px); }
+        .nav-inner { width: 100%; max-width: 42rem; padding: 0 20px 10px; display: flex; align-items: center; justify-content: space-between; }
+
+        .sticky-header { position: sticky; top: 70px; z-index: 40; padding: 16px 24px 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 16px; background: rgba(5, 5, 5, 0.1); backdrop-filter: blur(15px); }
         
-        .glass-input { width: 100%; height: 50px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; color: white; font-size: 17px; padding: 0 16px; outline: none; box-sizing: border-box; min-width: 0; }
-        .glass-input:focus { border-color: #0A84FF; background: rgba(255, 255, 255, 0.15); }
+        .glass-input { width: 100%; height: 50px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; color: white; font-size: 17px; padding: 0 16px; outline: none; box-sizing: border-box; min-width: 0; transition: all 0.2s; }
+        .glass-input:focus { border-color: #34d399; background: rgba(255, 255, 255, 0.12); }
         .glass-input.textarea { height: auto; padding-top: 12px; padding-bottom: 12px; min-height: 100px; resize: none; }
+        
         .checkbox-ios { appearance: none; width: 24px; height: 24px; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 50%; background: transparent; cursor: pointer; }
-        .checkbox-ios:checked { background-color: #30D158; border-color: #30D158; background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e"); }
+        .checkbox-ios:checked { background-color: #34d399; border-color: #34d399; background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e"); }
  
         .nav-pill { 
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; padding: 6px; border-radius: 99px;
+            background: rgba(30, 30, 30, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .nav-pill-item { 
             padding: 8px 16px; border-radius: 99px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; 
-            color: rgba(255, 255, 255, 0.7); 
+            color: rgba(255, 255, 255, 0.6); 
             transition: all 0.3s ease; 
             border: 1px solid transparent;
         }
 
         .nav-pill-item.active { 
             color: #fff;
-            background-color: rgba(10, 132, 255, 0.40);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         .modal-container { z-index: 70 !important; }
         
+        /* Updated iOS Liquid Glass Style */
         .liquid-glass { 
-            backdrop-filter: blur(10px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.125);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 1px rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
         }
         
         .pill-btn { padding: 4px 10px; border-radius: 99px; font-weight: 600; font-size: 13px; transition: background-color 0.1s; display: inline-flex; align-items: center; justify-content: center; }
         .pill-btn.edit.glass { color: #D1D1D6; background-color: rgba(142, 142, 147, 0.2); }
-        .pill-btn.add.glass { color: #0A84FF; background-color: rgba(10, 132, 255, 0.2); }
+        .pill-btn.add.glass { color: #34d399; background-color: rgba(16, 185, 129, 0.2); }
         .pill-btn.delete.glass { color: #FF453A; background-color: rgba(255, 69, 58, 0.2); }
 
         .gradient-dim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, rgba(0, 0, 0, 0.3) 100%); }
-        .gradient-separator { height: 1px; width: 100%; background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 100%); margin: 12px 0; }
+        .gradient-separator { height: 1px; width: 100%; background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%); margin: 12px 0; }
         
 
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        @keyframes pulse-emerald {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
-        .time-indicator-dot { animation: pulse-orange 2s infinite; }
+        .time-indicator-dot { animation: pulse-emerald 2s infinite; }
     </style>
 </head>
-<body x-data="app()" x-init="initData()" :class="{'overflow-hidden': modalOpen}" class="bg-black min-h-screen pb-40">
+<body x-data="app()" x-init="initData()" :class="{'overflow-hidden': modalOpen}" class="min-h-screen pb-40">
+
+    <div class="aurora-container">
+        <div class="aurora-blob blob-1"></div>
+        <div class="aurora-blob blob-2"></div>
+        <div class="aurora-blob blob-3"></div>
+    </div>
 
     <nav class="nav-bar">
-        <div class="flex items-center mb-1.5">
-            <h1 class="text-2xl font-extrabold tracking-wider text-white">🧘 ZenTrip</h1>
-            <div x-show="isFetching" class="fetch-spinner border-2 border-white/30 border-l-blue-500 rounded-full w-4 h-4 animate-spin ml-2"></div>
+        <div class="nav-inner">
+            <div class="flex items-center">
+                <span class="text-2xl mr-2">🧘</span>
+                <h1 class="text-xl font-bold tracking-wide text-white brand-font">ZenTrip</h1>
+                <div x-show="isFetching" class="ml-3 w-3 h-3 border-2 border-white/30 border-l-emerald-500 rounded-full animate-spin"></div>
+            </div>
+            <button @click="openAddModal()" class="pill-btn add glass liquid-glass !text-sm !px-4 !py-1.5">Add</button>
         </div>
-        <button @click="openAddModal()" class="pill-btn add glass liquid-glass !text-sm !px-4 !py-1.5 mb-1.5">Add</button>
     </nav>
     
-    <div class="nav-pill liquid-glass">
-        <div @click="page = 'itinerary'" class="nav-pill-item" :class="{'liquid-glass active': page === 'itinerary'}">
+    <div class="nav-pill">
+        <div @click="page = 'itinerary'" class="nav-pill-item" :class="{'active': page === 'itinerary'}">
             <span class="text-xl">🌏</span> Itinerary
         </div>
-        <div @click="page = 'checklists'" class="nav-pill-item" :class="{'liquid-glass active': page === 'checklists'}">
+        <div @click="page = 'checklists'" class="nav-pill-item" :class="{'active': page === 'checklists'}">
             <span class="text-xl">📝</span> Checklists
         </div>
     </div>
@@ -195,9 +241,9 @@ const htmlContent = `
              class="w-full max-w-2xl liquid-glass rounded-t-3xl border-b-0 p-4 sm:p-6 pb-10 max-h-[95vh] min-h-[40vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
             
             <div class="flex justify-between items-center mb-6">
-                <button @click="modalOpen = false" class="text-blue-500 text-base">Cancel</button>
+                <button @click="modalOpen = false" class="text-white/60 text-base">Cancel</button>
                 <span class="text-white font-bold text-base" x-text="getModalTitle()"></span>
-                <button @click="submitCurrentForm()" class="text-blue-500 font-bold text-base" :class="{'opacity-50': !isFormValid()}" x-text="isEditing ? 'Done' : 'Add'"></button>
+                <button @click="submitCurrentForm()" class="text-emerald-400 font-bold text-base" :class="{'opacity-50': !isFormValid()}" x-text="isEditing ? 'Done' : 'Add'"></button>
             </div>
 
             <div x-show="modalContext === 'itinerary'" class="space-y-5">
@@ -236,7 +282,7 @@ const htmlContent = `
                 <div class="pt-2">
                     <div class="flex justify-between items-center mb-3 pl-1">
                         <label class="text-xs text-white/40">Documents</label>
-                        <button @click="addItemDoc" type="button" class="text-xs text-blue-500 font-bold">+ Add File</button>
+                        <button @click="addItemDoc" type="button" class="text-xs text-emerald-400 font-bold">+ Add File</button>
                     </div>
                     <div class="space-y-3">
                         <template x-for="(doc, index) in form.docs" :key="index">
@@ -272,7 +318,7 @@ const htmlContent = `
         </div>
     </div>
 
-    <div class="pt-[70px]">
+    <div class="pt-[70px] w-full max-w-2xl mx-auto">
         
         <div x-show="page === 'itinerary'" 
              x-transition:enter="transition ease-out duration-300 delay-100" 
@@ -283,9 +329,9 @@ const htmlContent = `
             <div x-show="itinerary.length > 0">
                 <template x-for="(group, dateKey) in groupedItinerary" :key="dateKey">
                     <div>
-                        <div class="sticky-header flex justify-between items-center">
-                            <h2 class="text-xl font-bold text-blue-500 tracking-wide" x-text="formatDate(dateKey)"></h2>
-                            <span x-show="dateKey === currentDateString" class="text-xs font-bold bg-orange-500/20 text-orange-400 px-2 py-1 rounded-md uppercase">Today</span>
+                        <div class="sticky-header flex justify-between items-center rounded-b-2xl">
+                            <h2 class="text-lg font-bold text-emerald-400 tracking-wide brand-font" x-text="formatDate(dateKey)"></h2>
+                            <span x-show="dateKey === currentDateString" class="text-[10px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full uppercase tracking-wider">Today</span>
                         </div>
 
                         <div class="pl-2 pr-3 relative">
@@ -298,15 +344,15 @@ const htmlContent = `
 
                                     <template x-if="dateKey === currentDateString && index === 0 && currentTimeString < item.time">
                                         <div class="absolute left-[-2px] -top-6 z-20">
-                                            <div class="w-5 h-5 rounded-full bg-orange-500 border-4 border-black time-indicator-dot shadow-[0_0_10px_rgba(249,115,22,0.6)]"></div>
+                                            <div class="w-5 h-5 rounded-full bg-emerald-500 border-4 border-black time-indicator-dot shadow-[0_0_10px_rgba(16,185,129,0.6)]"></div>
                                         </div>
                                     </template>
 
                                     <div class="absolute top-6 left-[1px] w-3.5 h-3.5 rounded-full bg-zinc-800 border-2 border-white/30 z-10"
-                                         :class="{'!bg-green-500 !border-green-500': item.done}"></div>
+                                         :class="{'!bg-emerald-500 !border-emerald-500': item.done}"></div>
 
-                                    <div class="relative w-full overflow-hidden rounded-xl border border-white/15 shadow-md bg-zinc-900 transition-all duration-300" 
-                                         :class="{'!border-green-500/50': item.done}">
+                                    <div class="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg bg-zinc-900/80 backdrop-blur-md transition-all duration-300" 
+                                         :class="{'!border-emerald-500/50': item.done}">
                                         <div class="absolute inset-0 z-0">
                                             <template x-if="item.bgImage">
                                                 <img :src="item.bgImage" class="w-full h-full object-cover" :class="{'grayscale blur-sm': item.done}">
@@ -358,7 +404,7 @@ const htmlContent = `
                                     <template x-if="dateKey === currentDateString && currentTimeString >= item.time && (index === group.length - 1 || currentTimeString < group[index+1].time)">
                                         <div class="absolute left-[-2px] z-20" 
                                              :class="index === group.length - 1 ? 'top-6' : 'bottom-[-10px]'">
-                                            <div class="w-5 h-5 rounded-full bg-orange-500 border-4 border-black time-indicator-dot shadow-[0_0_10px_rgba(249,115,22,0.6)]"></div>
+                                            <div class="w-5 h-5 rounded-full bg-emerald-500 border-4 border-black time-indicator-dot shadow-[0_0_10px_rgba(16,185,129,0.6)]"></div>
                                         </div>
                                     </template>
 
@@ -383,10 +429,10 @@ const htmlContent = `
             <div x-show="checklists.length > 0">
                 <div class="px-4 space-y-8">
                     <template x-for="list in checklists" :key="list.id">
-                        <div class="w-full bg-zinc-900 border border-white/10 rounded-xl p-4 shadow-xl">
+                        <div class="w-full liquid-glass border border-white/10 rounded-2xl p-4 shadow-xl">
                             <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
                                 <div @click="openEditChecklistModal(list)" class="flex items-center gap-3 cursor-pointer group">
-                                    <span class="text-3xl shrink-0" x-text="list.icon || '📝'"></span>
+                                    <span class="text-3xl shrink-0" x-text="list.icon || '🎒'"></span>
                                     <h3 class="text-xl font-bold text-white" x-text="list.title"></h3>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
@@ -396,7 +442,7 @@ const htmlContent = `
                             </div>
                             <div class="space-y-2 pt-2">
                                 <template x-for="item in list.items" :key="item.id">
-                                    <div class="flex items-center justify-between bg-black/30 p-3 rounded-lg transition-all duration-300" 
+                                    <div class="flex items-center justify-between bg-black/20 p-3 rounded-lg transition-all duration-300 hover:bg-black/30" 
                                          :class="{'opacity-50 line-through text-white/50': item.done}">
                                         <div class="flex items-center gap-3 flex-1 min-w-0">
                                             <div @click="toggleDoneChecklistItem(list.id, item.id, item.done)" class="cursor-pointer shrink-0">
@@ -473,7 +519,6 @@ const htmlContent = `
                     }, {});
                 },
 
-                // Updated Date Format for European style (e.g. 2 December, Tuesday)
                 formatDate(str) {
                     const d = new Date(str);
                     const day = d.getDate();
@@ -482,10 +527,6 @@ const htmlContent = `
                     return \`\${day} \${month}, \${weekday}\`;
                 },
                 
-                formatTimeDisplay(date) {
-                    return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-                },
-
                 isFormValid() {
                     if(this.modalContext === 'itinerary') return !!this.form.title;
                     if(this.modalContext === 'checklists') return !!this.form.listTitle;
