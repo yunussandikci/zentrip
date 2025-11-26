@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZenTrip - Peaceful Trip Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+        :root { --bg-depth: #050505; }
+        * { -ms-overflow-style: none; scrollbar-width: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+        ::-webkit-scrollbar { display: none; }
+        body { background-color: var(--bg-depth); color: #fff; overflow-x: hidden; }
+        .brand-font, h1, h2, h3 { font-family: 'Outfit', sans-serif; }
+        .background { position: fixed; inset: 0; z-index: -1; pointer-events: none; background-color: #050505; background-image: radial-gradient(circle at 0% 0%, rgba(16, 185, 129, 0.2), transparent 50%), radial-gradient(circle at 100% 100%, rgba(124, 58, 237, 0.2), transparent 50%); }
+        .nav-bar { position: fixed; top: 0; left: 0; right: 0; width: 100%; z-index: 50; height: 70px; display: flex; align-items: flex-end; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(5,5,5,0.4); backdrop-filter: blur(15px); }
+        .liquid-glass { backdrop-filter: blur(10px) saturate(180%); background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        .nav-pill { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 60; display: flex; padding: 6px; border-radius: 99px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .nav-pill-item { padding: 8px 16px; border-radius: 99px; font-weight: 600; cursor: pointer; display: flex; gap: 8px; color: rgba(255,255,255,0.6); transition: 0.3s; }
+        .nav-pill-item.active { color: #fff; background: rgba(255,255,255,0.1); }
+        
+        .glass-input { width: 100%; height: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; color: white; padding: 0 16px; outline: none; transition: 0.2s; }
+        .glass-input:focus { border-color: #34d399; background: rgba(255,255,255,0.12); }
+        .checkbox-ios { appearance: none; width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; cursor: pointer; }
+        .checkbox-ios:checked { background: #34d399 url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='black' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e") center/contain no-repeat; border-color: #34d399; }
+        
+        .pill-btn { padding: 4px 10px; border-radius: 99px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; }
+        .edit.glass { color: #D1D1D6; background: rgba(142,142,147,0.2); } .add.glass { color: #34d399; background: rgba(16,185,129,0.2); } .blue.glass { color: #3b82f6; background: rgba(59,130,246,0.2); } .delete.glass { color: #FF453A; background: rgba(255,69,58,0.2); }
+        .time-indicator-dot { animation: pulse 2s infinite; box-shadow: 0 0 10px rgba(249,115,22,0.6); will-change: box-shadow; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.4); } 70% { box-shadow: 0 0 0 6px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+    </style>
+</head>
+<body x-data="app" class="min-h-screen pb-40" :class="{'overflow-hidden': modalOpen}">
+
+    <div class="background"></div>
+
+    <nav class="nav-bar">
+        <div class="w-full max-w-2xl px-5 pb-2.5 flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="text-2xl mr-2">🧘</span><h1 class="text-xl font-bold tracking-wide brand-font">ZenTrip</h1>
+                <div x-show="loading" class="ml-3 w-3 h-3 border-2 border-white/30 border-l-emerald-500 rounded-full animate-spin"></div>
+            </div>
+            <button @click="openModal(page)" class="pill-btn add glass liquid-glass !text-sm !px-4 !py-1.5">Add</button>
+        </div>
+    </nav>
+
+    <div class="nav-pill">
+        <div @click="page='itinerary'" class="nav-pill-item" :class="{'active': page==='itinerary'}"><span class="text-xl">🌏</span> Itinerary</div>
+        <div @click="page='checklists'" class="nav-pill-item" :class="{'active': page==='checklists'}"><span class="text-xl">📝</span> Checklists</div>
+    </div>
+
+    <div x-show="modalOpen" class="fixed inset-0 z-[70] flex items-end justify-center pointer-events-none" x-cloak>
+        <div x-show="modalOpen" @click="modalOpen=false" x-transition.opacity class="absolute inset-0 bg-black/80 backdrop-blur-sm pointer-events-auto"></div>
+        <div x-show="modalOpen" x-transition:enter="transition ease-[cubic-bezier(0.19,1,0.22,1)] duration-500" x-transition:enter-start="translate-y-full opacity-0" x-transition:enter-end="translate-y-0 opacity-100" x-transition:leave="transition ease-in duration-300" x-transition:leave-end="translate-y-full opacity-0"
+             class="w-full max-w-2xl liquid-glass rounded-t-3xl p-6 pb-10 max-h-[95vh] min-h-[40vh] overflow-y-auto relative shadow-2xl pointer-events-auto">
+            
+            <div class="flex justify-between items-center mb-6">
+                <button @click="modalOpen=false" class="text-white/60">Cancel</button>
+                <span class="font-bold" x-text="modalTitle"></span>
+                <button @click="submit" class="text-emerald-400 font-bold" :class="{'opacity-50': !valid}" x-text="editMode ? 'Done' : 'Add'"></button>
+            </div>
+
+            <div x-show="context==='itinerary'" class="space-y-5">
+                <div class="flex gap-3">
+                    <div class="w-[70px]"><label class="text-xs text-white/40 pl-2 mb-1 block">Emoji</label><input type="text" x-model="form.emoji" class="glass-input text-center text-3xl !px-0"></div>
+                    <div class="flex-1"><label class="text-xs text-white/40 pl-2 mb-1 block">Title</label><input type="text" x-model="form.title" class="glass-input"></div>
+                </div>
+                <div><label class="text-xs text-white/40 pl-2 mb-1 block">Description</label><textarea x-model="form.desc" class="glass-input !h-auto py-3 min-h-[100px] resize-none"></textarea></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="min-w-0">
+                        <label class="text-xs text-white/40 pl-2 mb-1 block">Date</label>
+                        <input type="date" x-model="form.date" class="glass-input w-full max-w-full appearance-none [color-scheme:dark]">
+                    </div>
+                    <div class="min-w-0">
+                        <label class="text-xs text-white/40 pl-2 mb-1 block">Time</label>
+                        <input type="time" x-model="form.time" class="glass-input w-full max-w-full appearance-none [color-scheme:dark]">
+                    </div>
+                </div>
+                <div><label class="text-xs text-white/40 pl-2 mb-1 block">Map Link</label><input type="text" x-model="form.locationUrl" class="glass-input" placeholder="Google Maps URL"></div>
+                <div><label class="text-xs text-white/40 pl-2 mb-1 block">Image</label><input type="text" x-model="form.bgImage" class="glass-input" placeholder="Image URL"></div>
+                <div class="pt-2">
+                    <div class="flex justify-between mb-3 pl-1"><label class="text-xs text-white/40">Docs</label><button @click="form.docs.push({name:'',url:''})" class="text-xs text-emerald-400 font-bold">+ File</button></div>
+                    <template x-for="(d,i) in form.docs"><div class="flex gap-2 mb-3"><input x-model="d.name" placeholder="Name" class="glass-input !h-10 !text-sm w-1/3"><input x-model="d.url" placeholder="URL" class="glass-input !h-10 !text-sm w-2/3"><button @click="form.docs.splice(i,1)" class="text-red-500 px-2">✕</button></div></template>
+                </div>
+            </div>
+
+            <div x-show="context==='checklists'" class="flex gap-3">
+                <div class="w-[70px]"><label class="text-xs text-white/40 pl-2 mb-1 block">Icon</label><input type="text" x-model="form.listIcon" class="glass-input text-center text-3xl !px-0"></div>
+                <div class="flex-1"><label class="text-xs text-white/40 pl-2 mb-1 block">Title</label><input type="text" x-model="form.listTitle" class="glass-input"></div>
+            </div>
+            <div x-show="context==='checklist_item'">
+                <label class="text-xs text-white/40 pl-2 mb-1 block">Item</label><input type="text" x-model="form.itemText" class="glass-input">
+                <p class="text-white/50 text-sm mt-2">Adding to: <span class="font-bold text-white" x-text="form.listTitle"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-[70px] w-full max-w-2xl mx-auto px-1">
+        
+        <div x-show="page==='itinerary'" x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
+            <template x-for="(group, date) in groupedItinerary" :key="date">
+                <div>
+                    <div class="sticky top-[70px] z-40 p-4 border-b border-white/5 bg-black/10 backdrop-blur-md rounded-b-2xl mb-4 flex justify-between">
+                        <h2 class="text-lg font-bold text-white-400 tracking-wide brand-font" x-text="fmtDate(date)"></h2>
+                        <span x-show="date===today" class="text-[10px] font-bold bg-orange-500/20 text-orange-400 px-2 py-1.5 rounded-full uppercase">Today</span>
+                    </div>
+                    <div class="pl-2 pr-3 relative">
+                        <template x-for="(item, idx) in group" :key="item.id">
+                            <div class="relative w-full pb-8 pl-6">
+                                <div x-show="idx !== group.length-1" class="absolute left-[3px] top-6 bottom-[-24px] w-[2px] bg-white/10 z-0"></div>
+                                <div x-show="date===today && group[idx+1] && nowTime >= item.time && nowTime < group[idx+1].time" class="absolute left-[-6px] bottom-[-10px] z-20 w-5 h-5 rounded-full bg-orange-500 border-4 border-black time-indicator-dot flex items-center justify-center">
+                                    <span class="absolute -top-4 text-[9px] font-bold text-orange-500" x-text="nowTime"></span>
+                                </div>
+                                
+                                <div class="absolute top-6 left-[-3px] w-3.5 h-3.5 rounded-full border-2 border-white/30 z-10 bg-zinc-800" :class="{'!bg-emerald-500 !border-emerald-500': item.done}"></div>
+                                
+                                <div class="relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-lg bg-zinc-900/80 backdrop-blur-md transition-all" :class="{'!border-emerald-500/50': item.done}">
+                                    <div class="absolute inset-0 z-0"><img x-show="item.bgImage" :src="item.bgImage" class="w-full h-full object-cover opacity-50" :class="{'grayscale blur-sm':item.done}"><div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/70 to-black/30"></div></div>
+                                    <div class="relative z-10 p-4 flex flex-col h-full">
+                                        <div class="flex justify-between items-start">
+                                            <span class="text-3xl font-bold tracking-wide" x-text="item.time"></span>
+                                            <div class="flex gap-2"><button @click="openModal('itinerary', item)" class="pill-btn edit glass liquid-glass">Edit</button><button @click="del('itinerary', {id:item.id})" class="pill-btn delete glass liquid-glass">Delete</button></div>
+                                        </div>
+                                        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-3"></div>
+                                        <div class="flex items-start space-x-3">
+                                            <div class="text-4xl w-10 text-center" x-text="item.emoji"></div>
+                                            <div class="flex-1 min-w-0"><h3 class="text-xl font-bold leading-none mb-1" x-text="item.title"></h3><p class="text-sm text-white/80 whitespace-pre-wrap" x-text="item.desc"></p></div>
+                                        </div>
+                                        <div class="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent my-3"></div>
+                                        <div class="flex justify-between pt-1">
+                                            <div class="flex flex-wrap gap-2">
+                                                <button x-show="item.locationUrl" @click="window.open(item.locationUrl, '_blank')" class="pill-btn add glass liquid-glass">📍 Location</button>
+                                                <template x-for="d in item.docs"><button @click="window.open(d.url, '_blank')" class="pill-btn edit glass liquid-glass" x-text="'📎 '+d.name"></button></template>
+                                            </div>
+                                            <div @click="toggle('itinerary', item.id, item.done)" class="pl-4"><input type="checkbox" :checked="item.done" class="checkbox-ios !w-9 !h-9 pointer-events-none"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <div x-show="!itinerary.length" class="flex flex-col items-center justify-center h-[60vh] text-white/30"><div class="text-6xl mb-4">🌏</div><p>No itinerary items</p></div>
+        </div>
+
+        <div x-show="page==='checklists'" x-transition:enter="transition ease-out duration-300 delay-100" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="px-4 space-y-8">
+            <template x-for="list in checklists" :key="list.id">
+                <div class="liquid-glass border border-white/10 rounded-2xl p-4 shadow-xl">
+                    <div class="flex justify-between items-center mb-4 pb-2 border-b border-white/10">
+                        <div @click="openModal('checklists', list)" class="flex items-center gap-3 cursor-pointer"><span class="text-3xl" x-text="list.icon||'🎒'"></span><h3 class="text-xl font-bold" x-text="list.title"></h3></div>
+                        <div class="flex gap-2"><button @click="openModal('checklist_item', {listId: list.id, listTitle: list.title})" class="pill-btn add glass liquid-glass">Add</button><button @click="del('checklists', {listId: list.id})" class="pill-btn delete glass liquid-glass">Delete</button></div>
+                    </div>
+                    <div class="space-y-2">
+                        <template x-for="item in list.items" :key="item.id">
+                            <div class="flex items-center justify-between bg-black/20 p-3 rounded-lg hover:bg-black/30 transition" :class="{'opacity-50 line-through text-white/50': item.done}">
+                                <div class="flex items-center gap-3 flex-1 min-w-0" @click="toggle('checklists', item.id, item.done, list.id)">
+                                    <input type="checkbox" :checked="item.done" class="checkbox-ios w-5 h-5 pointer-events-none shrink-0">
+                                    <span x-text="item.text" class="flex-1 break-words"></span>
+                                </div>
+                                <button @click="del('checklists', {id: item.id, listId: list.id})" class="pill-btn delete glass liquid-glass !text-xs !px-3 ml-2">Del</button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+            <div x-show="!checklists.length" class="flex flex-col items-center justify-center h-[60vh] text-white/30"><div class="text-6xl mb-4">🎒</div><p>No checklists</p></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('app', () => ({
+                loading: false, tripId: location.pathname.split('/')[1] || 'demo',
+                page: 'itinerary', itinerary: [], checklists: [],
+                modalOpen: false, context: 'itinerary', editMode: false,
+                now: new Date(),
+                form: {},
+                lastData: '',
+
+                init() {
+                    this.fetchData();
+                    setInterval(() => { if(!document.hidden) this.now = new Date() }, 30000);
+                    setInterval(() => { if(!document.hidden) this.fetchData() }, 10000);
+                },
+
+                get today() { return this.now.toISOString().split('T')[0]; },
+                get nowTime() { return this.now.toTimeString().slice(0,5); },
+                get groupedItinerary() {
+                    return [...this.itinerary].sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time))
+                        .reduce((acc, i) => ({...acc, [i.date]: [...(acc[i.date]||[]), i]}), {});
+                },
+                get modalTitle() { 
+                    const map = { itinerary: this.editMode?'Edit Activity':'New Activity', checklists: this.editMode?'Edit List':'New List', checklist_item: 'Add Item' };
+                    return map[this.context] || ''; 
+                },
+                get valid() {
+                    if(this.context === 'itinerary') return !!this.form.title;
+                    if(this.context === 'checklists') return !!this.form.listTitle;
+                    return !!this.form.itemText;
+                },
+
+                fmtDate(s) { return new Date(s).toLocaleDateString('en-US', { day:'numeric', month:'long', weekday:'long' }); },
+                
+                openModal(ctx, data = null) {
+                    this.context = ctx;
+                    this.editMode = !!data;
+                    const def = {
+                        itinerary: { emoji:'📍', title:'', desc:'', date:this.today, time:'09:00', bgImage:'', locationUrl:'', docs:[] },
+                        checklists: { listIcon:'🎒', listTitle:'' },
+                        checklist_item: { itemText: '' }
+                    };
+                    this.form = data ? JSON.parse(JSON.stringify(data)) : (def[ctx] || def.checklist_item);
+                    if(ctx === 'checklist_item' && data) this.form = { ...def.checklist_item, ...data }; // Merge listId
+                    this.modalOpen = true;
+                },
+
+                async api(method, url, body) {
+                    this.loading = true;
+                    await fetch(url, { method, headers:{'Content-Type':'application/json'}, body: body ? JSON.stringify(body) : undefined });
+                    await this.fetchData();
+                    this.loading = false;
+                },
+
+                async fetchData() {
+                    try {
+                        const res = await fetch(`/api/trip/${this.tripId}`);
+                        if(res.ok) {
+                            const text = await res.text();
+                            if (text === this.lastData) return;
+                            this.lastData = text;
+                            const d = JSON.parse(text);
+                            this.itinerary = d.itinerary||[];
+                            this.checklists = d.checklists||[];
+                        }
+                    } catch(e){}
+                },
+
+                submit() {
+                    if(!this.valid) return;
+                    
+                    if (this.context === 'itinerary') {
+                        if (this.editMode) {
+                            this.api('PATCH', `/api/trip/${this.tripId}/itinary/${this.form.id}`, this.form);
+                        } else {
+                            this.api('POST', `/api/trip/${this.tripId}/itinary`, this.form);
+                        }
+                    } else if (this.context === 'checklists') {
+                        if (this.editMode) {
+                            this.api('PATCH', `/api/trip/${this.tripId}/checklist/${this.form.id}`, this.form);
+                        } else {
+                            this.api('POST', `/api/trip/${this.tripId}/checklist`, this.form);
+                        }
+                    } else if (this.context === 'checklist_item') {
+                        this.api('PATCH', `/api/trip/${this.tripId}/checklist/${this.form.listId}`, { itemText: this.form.itemText });
+                    }
+                    this.modalOpen = false;
+                },
+
+                toggle(ctx, id, done, listId) {
+                    if(ctx==='itinerary') {
+                        this.itinerary.find(i=>i.id===id).done = !done;
+                        this.api('PATCH', `/api/trip/${this.tripId}/itinary/${id}`, { done: !done });
+                    }
+                    if(ctx==='checklists') {
+                        this.checklists.find(l=>l.id===listId).items.find(i=>i.id===id).done = !done;
+                        this.api('PATCH', `/api/trip/${this.tripId}/checklist/${listId}`, { itemId: id, done: !done });
+                    }
+                },
+
+                del(ctx, params) {
+                    if(!confirm('Are you sure?')) return;
+                    if (ctx === 'itinerary') {
+                        this.api('DELETE', `/api/trip/${this.tripId}/itinary/${params.id}`);
+                    } else if (ctx === 'checklists') {
+                        if (params.id) {
+                            this.api('PATCH', `/api/trip/${this.tripId}/checklist/${params.listId}`, { itemId: params.id, deleteItem: true });
+                        } else {
+                            this.api('DELETE', `/api/trip/${this.tripId}/checklist/${params.listId}`);
+                        }
+                    }
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
